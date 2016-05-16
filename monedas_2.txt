@@ -1,0 +1,23 @@
+model{
+	# Variable que decide qué moneda está cargada
+	for(i in 1:m){
+	p[i] <- 1/m
+}	
+	c ~ dcat(p[])  
+	
+	#Priors de las variables.
+
+	
+	
+    # La distribución depende del valor de k
+	Thetau ~ dbeta(1, 1)
+    Thetao ~ dbeta(10,10)
+    for (i in 1:m){
+        Theta[i] <- ifelse(c == i, Thetau, Thetao)  
+    }
+
+	for (i in 1:m){
+		k[i] ~ dbin(Theta[i], n)
+	}
+}
+
