@@ -2,14 +2,13 @@
 
 clear;
 
-sampler = 1; % Choose 0=WinBUGS, 1=JAGS
 
 % JAGS 3.2.0+ seems to work, but 3.1.0 did not
 
 %% Data
 n = 10;
 m = 3;
-k = [10, 0, 10];
+k = [10,10,5];
 %% Sampling
 % MCMC Parameters
 nchains = 3; % How Many Chains?
@@ -23,47 +22,89 @@ datastruct = struct('k',k,'m',m,'n',n);
 
 % Initialize Unobserved Variables
 for i=1:nchains
-    S.Thetao = 0.5;
+    % S.Thetao = 0.5;
     S.c = i;
     S.Thetau = 0.5;
     init0(i) = S;
 end
 
-if ~sampler
-    % Use WinBUGS to Sample
-    tic
-    [samples, stats] = matbugs(datastruct, ...
-        fullfile(pwd, 'Survey.txt'), ...
-        'init', init0, ...
-        'nChains', nchains, ...
-        'view', 1, 'nburnin', nburnin, 'nsamples', nsamples, ...
-        'thin', nthin, 'DICstatus', 0, 'refreshrate',100, ...
-        'monitorParams', {'theta','n'}, ...
-        'Bugdir', 'C:/Program Files/WinBUGS14');
-    toc
-else
-    % Use JAGS to Sample
-    tic
-    fprintf( 'Running JAGS with chains serially...\n' );
-    [samples, stats] = matjags( ...
-        datastruct, ...
-        fullfile(pwd, 'monedas_2.txt'), ...
-        init0, ...
-        'doparallel' , doparallel, ...
-        'nchains', nchains,...
-        'nburnin', nburnin,...
-        'nsamples', nsamples, ...
-        'thin', nthin, ...
-        'monitorparams', {'Theta', 'Thetau', 'Thetao', 'c'}, ...
-        'savejagsoutput' , 1 , ...
-        'verbosity' , 1 , ...
-        'cleanup' , 0 , ...
-        'workingdir' , 'tmpjags' );
-    toc
-end;
+
+
+% Use JAGS to Sample
+tic
+fprintf( 'Running JAGS with chains serially...\n' );
+[samples, stats] = matjags( ...
+    datastruct, ...
+    fullfile(pwd, 'monedas.txt'), ...
+    init0, ...
+    'doparallel' , doparallel, ...
+    'nchains', nchains,...
+    'nburnin', nburnin,...
+    'nsamples', nsamples, ...
+    'thin', nthin, ...
+    'monitorparams', {'Theta', 'Thetau',  'c', 'Thetao'}, ...
+    'savejagsoutput' , 1 , ...
+    'verbosity' , 1 , ...
+    'cleanup' , 0 , ...
+    'workingdir' , 'tmpjags' );
+toc
+    
+%% Analysis
+cAn=reshape(samples.c,1,[]);
+ThetauAn=reshape(samples.Thetau,1,[]);
+%ThetaAn=reshape(samples.Theta,1,[],3);
+for i = 1:3
+    ThetaAn(1,:,i) = reshape(samples.Theta(:,:,i), 1, []); 
+end 
+figure(1);clf;hold on;
+
+ylimite = [0 12000];
+set(gcf,'units','norm','pos',[.2 .2 .9 .5],'paperpositionmode','auto');
+
+
+subplot(131);hold on; h1 = gca;
+set(h1, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
+hist(ThetaAn(1,:,1), 60);
+title('Theta moneda 1');
+ylim(ylimite);
+xlabel('Theta');
+ylabel('Count');
+
+
+subplot(132);hold on; h2 = gca;
+
+set(h2, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
+hist(ThetaAn(1,:,2), 60);
+title('Theta moneda 2');
+ylim(ylimite);
+xlabel('Theta');
+ylabel('Count');
+
+
+subplot(133);hold on; h3 = gca;
+set(h3, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
+hist(ThetaAn(1,:,3), 60);
+title('Theta moneda 3');
+ylim(ylimite);
+xlabel('Theta');
+ylabel('Count');
+
+figure(2);clf;hold on;
+%subplot(121);hold on;
+axis square;
+eps=.01;bins=[0:eps:1];binsc=[eps/2:eps:1-eps/2];
+count=histc(reshape(samples.Thetau,1,[]),bins);
+count=count(1:end-1);
+count=count/sum(count)/eps;
+ph=plot(binsc,count,'k-');
+set(gca,'xlim',[0 1],'box','on','fontsize',14,'xtick',[0:.2:1],'ytick',[1:ceil(max(get(gca,'ylim')))]);
+set(gca,'box','on','fontsize',14);
+xlabel('Rate','fontsize',16);
+ylabel('Density','fontsize',16);
+
 
 % %% Analysis
-% n=reshape(samples.n,1,[]);
+% n=reshape(samples.n,1,[]); %
 % theta=reshape(samples.theta,1,[]);
 % figure(50+dataset);clf;hold on;
 % set(gcf,'units','norm','pos',[.2 .2 .45 .55],'paperpositionmode','auto');

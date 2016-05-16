@@ -10,10 +10,10 @@ model{
 	
 	
     # La distribución depende del valor de k
-	Thetau ~ dbeta(1, 1)
-    Thetao ~ dbeta(10,10)
+	
     for (i in 1:m){
-        Theta[i] <- ifelse(c == i, Thetau, Thetao)  
+        Thetau[i] ~ dbeta(1, 1)
+		Theta[i] <- ifelse(c == i, Thetau[i], 1/2)  
     }
 
 	for (i in 1:m){
