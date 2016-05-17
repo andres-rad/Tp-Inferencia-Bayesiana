@@ -8,7 +8,7 @@ clear;
 %% Data
 n = 10;
 m = 3;
-k = [10,10,5];
+k = [10,6,5];
 %% Sampling
 % MCMC Parameters
 nchains = 3; % How Many Chains?
@@ -58,36 +58,39 @@ for i = 1:3
 end 
 figure(1);clf;hold on;
 
-ylimite = [0 12000];
+xlimite = [0 1];
+ylimite = [0 40];
+
 set(gcf,'units','norm','pos',[.2 .2 .9 .5],'paperpositionmode','auto');
 
 
 subplot(131);hold on; h1 = gca;
 set(h1, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-hist(ThetaAn(1,:,1), 60);
+histogram(ThetaAn(1,:,1), 60, 'Normalization', 'pdf');
 title('Theta moneda 1');
-ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
+xlim(xlimite);
+ylim(ylimite);
 
 
 subplot(132);hold on; h2 = gca;
-
 set(h2, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-hist(ThetaAn(1,:,2), 60);
+histogram(ThetaAn(1,:,2), 60, 'Normalization', 'pdf');
 title('Theta moneda 2');
-ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
-
+xlim(xlimite);
+ylim(ylimite);
 
 subplot(133);hold on; h3 = gca;
 set(h3, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-hist(ThetaAn(1,:,3), 60);
+histogram(ThetaAn(1,:,3), 60, 'Normalization', 'pdf');
 title('Theta moneda 3');
-ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
+xlim(xlimite);
+ylim(ylimite);
 
 figure(2);clf;hold on;
 %subplot(121);hold on;
