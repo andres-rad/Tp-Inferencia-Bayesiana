@@ -24,8 +24,9 @@ datastruct = struct('k',k,'m',m,'n',n);
 for i=1:nchains
     S.Thetao(1) = 0.5;
     S.Thetao(2) = 0.5;
+    S.Thetao(3) = 0.5;
     S.c = i;
-    S.Tau = 0.5;
+    S.Tau = [0.5 , 0.5 , 0.5];
     init0(i) = S;
 end
 
@@ -36,7 +37,7 @@ tic
 fprintf( 'Running JAGS with chains serially...\n' );
 [samples, stats] = matjags( ...
     datastruct, ...
-    fullfile(pwd, 'monedas.txt'), ...
+    fullfile(pwd, 'monedas_vector.txt'), ...
     init0, ...
     'doparallel' , doparallel, ...
     'nchains', nchains,...
@@ -52,12 +53,16 @@ toc
     
 %% Analysis
 cAn=reshape(samples.c,1,[]);
-TauAn=reshape(samples.Tau,1,[]);
+%TauAn=reshape(samples.Tau,1,[],3);
+for i = 1:3
+    TauAn(1,:,i) = reshape(samples.Tau(:,:,i), 1, []); 
+end 
+TauPosta = (cAn==1).*TauAn(1,:,1) + (cAn==2).*TauAn(1,:,2) + (cAn==3).*TauAn(1,:,3) ;
 %ThetaAn=reshape(samples.Theta,1,[],3);
 for i = 1:3
     ThetaAn(1,:,i) = reshape(samples.Theta(:,:,i), 1, []); 
 end 
-figure(1);clf;hold on;
+figure(10);clf;hold on;
 
 ylimite = [0 15];
 set(gcf,'units','norm','pos',[.2 .2 .9 .5],'paperpositionmode','auto');
@@ -104,11 +109,11 @@ ylabel('Count');
 
 
 %Ploteo de la densidad del Theta de la moneda cargada.
-figure(2);clf;hold on;
+figure(12);clf;hold on;
 title('Densidad Tau', 'fontsize', 16);
 axis square;
 eps=.01;bins=[0:eps:1];binsc=[eps/2:eps:1-eps/2];
-count=histc(reshape(samples.Tau,1,[]),bins);
+count=histc(reshape(TauPosta,1,[]),bins);
 count=count(1:end-1);
 count=count/sum(count)/eps;
 ph=plot(binsc,count,'k-');
@@ -120,7 +125,7 @@ ylabel('Density','fontsize',16);
 %Ploteo de la distribución de c.
 
 c_total = reshape(samples.c, 1, []);
-figure(3);clf; hold on;
+figure(13);clf; hold on;
 title('Densidad variable categórica', 'fontsize', 16);
 axis square;
 hist(c_total);

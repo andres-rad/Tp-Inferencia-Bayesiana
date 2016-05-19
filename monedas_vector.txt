@@ -6,14 +6,13 @@ model{
 	c ~ dcat(p[])  
 	
 	#Priors de las variables.
-
-	
 	
     # La distribución depende del valor de k
 	
     for (i in 1:m){
-        Thetau[i] ~ dbeta(1, 1)
-		Theta[i] <- ifelse(c == i, Thetau[i], 1/2)  
+        Thetao[i] ~ dbeta(1000, 1000)
+        Tau[i] ~ dbeta(1, 1)
+		Theta[i] <- ifelse(c == i, Tau[i], Thetao[i])  
     }
 
 	for (i in 1:m){
