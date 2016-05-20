@@ -5,15 +5,15 @@ clear;
 
 % JAGS 3.2.0+ seems to work, but 3.1.0 did not
 
-%% Data
+%% Sampling
 n = 10;
 m = 3;
-k = [0,0,10];
-%% Sampling
+k = [7,8,0];
+
 % MCMC Parameters
 nchains = 3; % How Many Chains?
 nburnin = 3e3; % How Many Burn-in Samples?
-nsamples = 9e5;  %How Many Recorded Samples?
+nsamples = 3e3;  %How Many Recorded Samples?
 nthin = 3; % How Often is a Sample Recorded?
 doparallel = 0; % Parallel Option
 
@@ -54,12 +54,16 @@ toc
 %% Analysis
 cAn=reshape(samples.c,1,[]);
 %TauAn=reshape(samples.Tau,1,[],3);
-for i = 1:3
+
+
+for i = 1:m
     TauAn(1,:,i) = reshape(samples.Tau(:,:,i), 1, []); 
 end 
 TauPosta = (cAn==1).*TauAn(1,:,1) + (cAn==2).*TauAn(1,:,2) + (cAn==3).*TauAn(1,:,3) ;
 %ThetaAn=reshape(samples.Theta,1,[],3);
-for i = 1:3
+
+
+for i = 1:m
     ThetaAn(1,:,i) = reshape(samples.Theta(:,:,i), 1, []); 
 end 
 figure(10);clf;hold on;
@@ -68,15 +72,16 @@ ylimite = [0 15];
 set(gcf,'units','norm','pos',[.2 .2 .9 .5],'paperpositionmode','auto');
 
 %Datos generales para graficar.
-nbins = 60;
+nbins = 100;
 wbin = 1/nbins;
 binCenters = wbin/2:wbin:1-wbin/2;
+bins = 0:wbin:1-wbin;
 count = nchains * nsamples;
 
 %Ploteo de las densidades de Theta para cada moneda.
 subplot(131);hold on; h1 = gca;
 set(h1, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h1_sinN = hist(ThetaAn(1,:,1), nbins);
+h1_sinN = histc(ThetaAn(1,:,1), bins);
 prob1 = h1_sinN / (count * wbin);
 bar(binCenters, prob1, 'hist');
 title('Theta moneda 1', 'fontsize', 16);
@@ -87,7 +92,7 @@ ylabel('Count');
 
 subplot(132);hold on; h2 = gca;
 set(h2, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h2_sinN = hist(ThetaAn(1,:,2), nbins);
+h2_sinN = histc(ThetaAn(1,:,2), bins);
 prob2 = h2_sinN / (count * wbin);
 bar(binCenters, prob2, 'hist');
 title('Theta moneda 2', 'fontsize', 16);
@@ -98,7 +103,7 @@ ylabel('Count');
 
 subplot(133);hold on; h3 = gca;
 set(h3, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h3_sinN = hist(ThetaAn(1,:,3), nbins);
+h3_sinN = histc(ThetaAn(1,:,3), bins);
 prob3 = h3_sinN / (count *wbin);
 bar(binCenters, prob3, 'hist');
 title('Theta moneda 3', 'fontsize', 16);

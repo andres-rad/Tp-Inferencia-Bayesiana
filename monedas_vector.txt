@@ -10,7 +10,7 @@ model{
     # La distribución depende del valor de k
 	
     for (i in 1:m){
-        Thetao[i] ~ dbeta(1000, 1000)
+        Thetao[i] ~ dbeta(100, 100)
         Tau[i] ~ dbeta(1, 1)
 		Theta[i] <- ifelse(c == i, Tau[i], Thetao[i])  
     }

@@ -12,9 +12,9 @@ model{
     Thetao[2] ~ dbeta(1000,1000)
     
     
-    Theta[1] <- equals(c, 1) * Tau + equals(c, 2) * Thetao[1] + equals(c,3) * Thetao[1]
-    Theta[2] <- equals(c, 1) * Thetao[1] + equals(c,2) * Tau + equals(c, 3) * Thetao[2]
-    Theta[3] <- equals(c, 1) * Thetao[2] + equals(c,2) * Thetao[2] + equals(c, 3) * Tau
+    Theta[1] <- equals(c, 1) * Tau + equals(c, 2) * Thetao[1] + equals(c,3) * Thetao[2]
+    Theta[2] <- equals(c, 1) * Thetao[2] + equals(c,2) * Tau + equals(c, 3) * Thetao[1]
+    Theta[3] <- equals(c, 1) * Thetao[1] + equals(c,2) * Thetao[2] + equals(c, 3) * Tau
     
     #for (i in 1:m){        
     #    Theta[i] <- ifelse(c == i, Tau, Thetao[j])  
