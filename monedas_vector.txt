@@ -1,5 +1,5 @@
 model{
-	# Variable que decide qué moneda está cargada
+	# Variable que decide que moneda esta cargada
 	for(i in 1:m){
 	p[i] <- 1/m
 }	
@@ -7,12 +7,12 @@ model{
 	
 	#Priors de las variables.
 	
-    # La distribución depende del valor de k
+    # La distribucion depende del valor de k
 	
     for (i in 1:m){
-        Thetao[i] ~ dbeta(100, 100)
+        Lambda[i] ~ dbeta(1000, 1000)
         Tau[i] ~ dbeta(1, 1)
-		Theta[i] <- ifelse(c == i, Tau[i], Thetao[i])  
+		Theta[i] <- ifelse(c == i, Tau[i], Lambda[i])  
     }
 
 	for (i in 1:m){

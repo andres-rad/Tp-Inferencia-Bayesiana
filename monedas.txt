@@ -1,23 +1,23 @@
 model{
-	# Variable que decide qué moneda está cargada
+	# Variable que decide que moneda esta cargada
 	for(i in 1:m){
         p[i] <- 1/m
     }	
 	c ~ dcat(p[])  
 	
 	#Priors de las variables.
-	# La distribución depende del valor de k
+	# La distribucion depende del valor de k
 	Tau ~ dbeta(1, 1)
-    Thetao[1] ~ dbeta(1000,1000)
-    Thetao[2] ~ dbeta(1000,1000)
+    Lambda[1] ~ dbeta(1000,1000)
+    Lambda[2] ~ dbeta(1000,1000)
     
     
-    Theta[1] <- equals(c, 1) * Tau + equals(c, 2) * Thetao[1] + equals(c,3) * Thetao[2]
-    Theta[2] <- equals(c, 1) * Thetao[2] + equals(c,2) * Tau + equals(c, 3) * Thetao[1]
-    Theta[3] <- equals(c, 1) * Thetao[1] + equals(c,2) * Thetao[2] + equals(c, 3) * Tau
+    Theta[1] <- equals(c, 1) * Tau + equals(c, 2) * Lambda[1] + equals(c,3) * Lambda[2]
+    Theta[2] <- equals(c, 1) * Lambda[2] + equals(c,2) * Tau + equals(c, 3) * Lambda[1]
+    Theta[3] <- equals(c, 1) * Lambda[1] + equals(c,2) * Lambda[2] + equals(c, 3) * Tau
     
     #for (i in 1:m){        
-    #    Theta[i] <- ifelse(c == i, Tau, Thetao[j])  
+    #    Theta[i] <- ifelse(c == i, Tau, Lambda[j])  
     #}
 
 

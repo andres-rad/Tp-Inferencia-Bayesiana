@@ -8,7 +8,7 @@ clear;
 %% Data
 n = 10;
 m = 3;
-k = [7,8,0];
+k = [3,4,10];
 %% Sampling
 % MCMC Parameters
 nchains = 3; % How Many Chains?
@@ -22,8 +22,8 @@ datastruct = struct('k',k,'m',m,'n',n);
 
 % Initialize Unobserved Variables
 for i=1:nchains
-    S.Thetao(1) = 0.5;
-    S.Thetao(2) = 0.5;
+    S.Lambda(1) = 0.5;
+    S.Lambda(2) = 0.5;
     S.c = i;
     S.Tau = 0.5;
     init0(i) = S;
@@ -43,7 +43,7 @@ fprintf( 'Running JAGS with chains serially...\n' );
     'nburnin', nburnin,...
     'nsamples', nsamples, ...
     'thin', nthin, ...
-    'monitorparams', {'Theta', 'Tau',  'c', 'Thetao'}, ...
+    'monitorparams', {'Theta', 'Tau',  'c', 'Lambda'}, ...
     'savejagsoutput' , 1 , ...
     'verbosity' , 1 , ...
     'cleanup' , 0 , ...
