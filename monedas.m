@@ -13,7 +13,7 @@ k = [3,4,10];
 % MCMC Parameters
 nchains = 3; % How Many Chains?
 nburnin = 3e3; % How Many Burn-in Samples?
-nsamples = 3e5;  %How Many Recorded Samples?
+nsamples = 9e5;  %How Many Recorded Samples?
 nthin = 3; % How Often is a Sample Recorded?
 doparallel = 0; % Parallel Option
 
@@ -51,12 +51,10 @@ fprintf( 'Running JAGS with chains serially...\n' );
 toc
     
 %% Analysis
-cAn=reshape(samples.c,1,[]);
-TauAn=reshape(samples.Tau,1,[]);
+
 %ThetaAn=reshape(samples.Theta,1,[],3);
-for i = 1:3
-    ThetaAn(1,:,i) = reshape(samples.Theta(:,:,i), 1, []); 
-end 
+
+
 figure(1);clf;hold on;
 
 ylimite = [0 15];
@@ -69,10 +67,30 @@ binCenters = wbin/2:wbin:1-wbin/2;
 bins = 0:wbin:1-wbin;
 count = nchains * nsamples;
 
+%Procesamiento datos
+cAn=reshape(samples.c,1,[]);
+TauAn=reshape(samples.Tau,1,[]);
+
+for i = 1:m
+    ThetaAn(1,:,i) = reshape(samples.Theta(:,:,i), 1, []); 
+end 
+
+for i = 1:m-1
+    LambdaAn(1,:,i) = reshape(samples.Lambda(:,:,i), 1, []);
+    LambdaInter(:,i) = squeeze(LambdaAn(1,:,i));
+end
+
+Lambda1 = reshape(LambdaInter(:,1), 1, []);
+Lambda2 = reshape(LambdaInter(:,2), 1, []);
+
+
 %Ploteo de las densidades de Theta para cada moneda.
+
+
+%Moneda 1
 subplot(131);hold on; h1 = gca;
 set(h1, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h1_sinN = hist(ThetaAn(1,:,1), nbins);
+h1_sinN = histc(ThetaAn(1,:,1), bins);
 prob1 = h1_sinN / (count * wbin);
 bar(binCenters, prob1, 'hist');
 title('Theta moneda 1', 'fontsize', 16);
@@ -80,10 +98,27 @@ ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
 
+%Superpongo Tau
+h4_sinN = histc(TauAn, bins);
+prob4 = h4_sinN / (size(TauAn, 2) *wbin);
+plot(binCenters, prob4,'r', 'linewidth', 1.4);
+
+%Superpongo Lambdas
+h5_sinN = histc(Lambda1, bins);
+prob5 = h5_sinN / (size(Lambda1,2) * wbin);
+plot(binCenters, prob5, 'g--', 'linewidth', 1.4);
+
+h6_sinN = histc(Lambda2, bins);
+prob6 = h6_sinN / (size(Lambda2, 2) * wbin);
+plot(binCenters, prob6, 'k-.', 'linewidth', 1.4);
+
+legend('\theta_1', '\tau', '\lambda_1', '\lambda_2');
+
+%Moneda 2
 
 subplot(132);hold on; h2 = gca;
 set(h2, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h2_sinN = hist(ThetaAn(1,:,2), nbins);
+h2_sinN = histc(ThetaAn(1,:,2), bins);
 prob2 = h2_sinN / (count * wbin);
 bar(binCenters, prob2, 'hist');
 title('Theta moneda 2', 'fontsize', 16);
@@ -91,10 +126,18 @@ ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
 
+%Superpongo Tau
+plot(binCenters, prob4,'r', 'linewidth', 1.4);
+%Superpongo Lambdas
+plot(binCenters, prob5, 'g--', 'linewidth', 1.4);
+plot(binCenters, prob6, 'k-.', 'linewidth', 1.4);
 
+legend('\theta_1', '\tau', '\lambda_1', '\lambda_2');
+
+%Moneda 3
 subplot(133);hold on; h3 = gca;
 set(h3, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
-h3_sinN = hist(ThetaAn(1,:,3), nbins);
+h3_sinN = histc(ThetaAn(1,:,3), bins);
 prob3 = h3_sinN / (count *wbin);
 bar(binCenters, prob3, 'hist');
 title('Theta moneda 3', 'fontsize', 16);
@@ -102,27 +145,19 @@ ylim(ylimite);
 xlabel('Theta');
 ylabel('Count');
 
+%Superpongo Tau
+plot(binCenters, prob4,'r', 'linewidth', 1.4);
+%Superpongo Lambdas
+plot(binCenters, prob5, 'g--', 'linewidth', 1.4);
+plot(binCenters, prob6, 'k-.', 'linewidth', 1.4);
 
+legend('\theta_1', '\tau', '\lambda_1', '\lambda_2');
 
-%Ploteo de la densidad del Theta de la moneda cargada.
-figure(2);clf;hold on;
-title('Densidad Tau', 'fontsize', 16);
-axis square;
-eps=.01;bins=[0:eps:1];binsc=[eps/2:eps:1-eps/2];
-count=histc(reshape(samples.Tau,1,[]),bins);
-count=count(1:end-1);
-count=count/sum(count)/eps;
-ph=plot(binsc,count,'k-');
-set(gca,'xlim',[0 1],'box','on','fontsize',14,'xtick',[0:.2:1],'ytick',[1:ceil(max(get(gca,'ylim')))]);
-set(gca,'box','on','fontsize',14);
-xlabel('Rate','fontsize',16);
-ylabel('Density','fontsize',16);
-
-%Ploteo de la distribución de c.
+%Ploteo de la distribucion de c.
 
 c_total = reshape(samples.c, 1, []);
 figure(3);clf; hold on;
-title('Densidad variable categórica', 'fontsize', 16);
+title('Densidad variable categorica', 'fontsize', 16);
 axis square;
 hist(c_total);
 
