@@ -65,7 +65,7 @@ set(gcf,'units','norm','pos',[.2 .2 .9 .5],'paperpositionmode','auto');
 nbins = 100;
 wbin = 1/nbins;
 binCenters = wbin/2:wbin:1-wbin/2;
-bins = 0:wbin:1-wbin;
+bins = wbin:wbin:1;
 count = nchains * nsamples;
 
 %Procesamiento de datos
@@ -123,7 +123,7 @@ ylim(ylimite);
 xlabel('Theta');
 ylabel('Densidad');
 
-%Superpongo gráfico de Lambda 1 
+%Superpongo grï¿½fico de Lambda 1 
 
 %subplot(337);hold on; h7 = gca;
 %set(h7, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
@@ -137,7 +137,7 @@ plot(binCenters, prob7,'r', 'linewidth', 1.4);
 %ylabel('Densidad');
 
 
-%Superpongo gráfico de Tau 1
+%Superpongo grï¿½fico de Tau 1
 
 %subplot(334);hold on; h4 = gca;
 %set(h4, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
@@ -164,7 +164,7 @@ ylim(ylimite);
 xlabel('Theta');
 ylabel('Densidad');
 
-%Superpongo gráfico Lambda 2
+%Superpongo grï¿½fico Lambda 2
 
 %subplot(338);hold on; h8 = gca;
 %set(h8, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
@@ -176,7 +176,7 @@ plot(binCenters, prob8,'r', 'linewidth', 1.4);
 %xlabel('Tau');
 %ylabel('Densidad');
 
-%Superpongo gráfico Tau 2
+%Superpongo grï¿½fico Tau 2
 
 %subplot(335);hold on; h5 = gca;
 %set(h5, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
@@ -203,7 +203,7 @@ xlabel('Theta');
 ylabel('Densidad');
 
 
-%Superpongo gráfico Lambda 3
+%Superpongo grï¿½fico Lambda 3
 
 h9_sinN = histc(Lambda3, bins);
 prob9 = h9_sinN / (size(Lambda3, 2) *wbin);
@@ -213,7 +213,7 @@ plot(binCenters, prob9, 'r', 'linewidth', 1.4);
 %xlabel('Tau');
 %ylabel('Densidad');
 
-%Superpongo gráfico Tau 3
+%Superpongo grï¿½fico Tau 3
 
 %subplot(336);hold on; h6 = gca;
 %set(h6, 'yaxislocation', 'left', 'box', 'on', 'fontsize', 13);
@@ -233,6 +233,14 @@ figure(13);clf; hold on;
 title('Densidad variable categorica', 'fontsize', 16);
 axis square;
 hist(c_total);
+
+
+stats2=stats;
+stats2.mean.Tau = [mean(Tau1) mean(Tau2) mean(Tau3)];
+stats2.mean.Lambda = [mean(Lambda1) mean(Lambda2) mean(Lambda3)];
+stats2.std.Lambda = [std(Lambda1) std(Lambda2) std(Lambda3)];
+stats2.std.Tau = [std(Tau1) std(Tau2) std(Tau3)];
+
 
 
 
