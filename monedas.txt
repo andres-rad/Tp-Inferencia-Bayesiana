@@ -16,11 +16,6 @@ model{
     Theta[2] <- equals(c, 1) * Lambda[2] + equals(c,2) * Tau + equals(c, 3) * Lambda[1]
     Theta[3] <- equals(c, 1) * Lambda[1] + equals(c,2) * Lambda[2] + equals(c, 3) * Tau
     
-    #for (i in 1:m){        
-    #    Theta[i] <- ifelse(c == i, Tau, Lambda[j])  
-    #}
-
-
 	for (i in 1:m){
 		k[i] ~ dbin(Theta[i], n)
 	}
